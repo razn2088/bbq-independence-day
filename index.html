@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>מנגל יום העצמאות 🇮🇱🔥</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -170,6 +175,7 @@
       border-top: 1px solid #eef1fb; align-items: center;
     }
 
+    /* Ticker */
     .ticker-wrap {
       overflow: hidden;
       background: linear-gradient(90deg,#002080,#003399,#002080);
@@ -185,6 +191,17 @@
       height: 6px;
       background: linear-gradient(90deg,#003399 0%,#003399 33%,#fff 33%,#fff 66%,#003399 66%,#003399 100%);
     }
+
+    /* Sync indicator */
+    .sync-dot {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; background: #aaa;
+      margin-left: 6px; vertical-align: middle;
+      transition: background .3s;
+    }
+    .sync-dot.live { background: #2e7d32; animation: pulse 2s infinite; }
+    .sync-dot.error { background: #c62828; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
 
     .empty-msg { text-align: center; color: #aab4cc; padding: 32px 0; font-size: 1rem; }
     footer { text-align: center; color: #8899bb; font-size: 0.8rem; margin-top: 8px; }
@@ -205,7 +222,7 @@
 </div>
 <div class="israel-stripe"></div>
 
-<header style="padding-top:24px;">
+<header style="padding-top:20px;">
   <span class="flag">🇮🇱🔥🇮🇱</span>
   <h1>מנגל יום העצמאות</h1>
   <p class="subtitle">רשימת משתתפים • מה כולם מביאים • העדפות אוכל • מי הגיע</p>
@@ -285,9 +302,12 @@
 </div>
 
 <div class="card">
-  <h2>📋 רשימת משתתפים</h2>
+  <h2>
+    📋 רשימת משתתפים
+    <span class="sync-dot" id="sync-dot" title="סטטוס חיבור"></span>
+  </h2>
   <div class="guest-list" id="guest-list">
-    <div class="empty-msg">עדיין אין נרשמים — היה הראשון! 🎉</div>
+    <div class="empty-msg">מתחבר לבסיס הנתונים…</div>
   </div>
 </div>
 
@@ -298,8 +318,20 @@
 </footer>
 
 <script>
-  const STORAGE_KEY = 'bbq_guests_v2';
-  let formRsvp = 'yes';
+  const FIREBASE_CONFIG = {
+    apiKey:            "AIzaSyDCLRDd2Tuob1Q5BNaQZj2SCiPBd_3Qd3Y",
+    authDomain:        "atzmaut-6d0a8.firebaseapp.com",
+    databaseURL:       "https://atzmaut-6d0a8-default-rtdb.firebaseio.com",
+    projectId:         "atzmaut-6d0a8",
+    storageBucket:     "atzmaut-6d0a8.firebasestorage.app",
+    messagingSenderId: "1079278782288",
+    appId:             "1:1079278782288:web:8500facb117fc1f2ad0e55",
+  };
+
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const guestsRef = firebase.database().ref('bbq-mangal/guests');
+
+  let formRsvp  = 'yes';
   let formBring = [];
 
   const RSVP_LABELS = {
@@ -308,12 +340,22 @@
     no:    '❌ לא מגיע/ה',
   };
 
-  function loadGuests() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
-  }
-  function saveGuests(g) { localStorage.setItem(STORAGE_KEY, JSON.stringify(g)); }
-  function getMyId() { return Number(localStorage.getItem('myGuestId')); }
+  function getMyKey() { return localStorage.getItem('myGuestKey'); }
+
+  guestsRef.on('value', snapshot => {
+    const data = snapshot.val();
+    const guests = data
+      ? Object.entries(data)
+          .map(([key, val]) => ({ ...val, _key: key }))
+          .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+      : [];
+    render(guests);
+    document.getElementById('sync-dot').className = 'sync-dot live';
+  }, () => {
+    document.getElementById('sync-dot').className = 'sync-dot error';
+    document.getElementById('guest-list').innerHTML =
+      '<div class="empty-msg">❌ שגיאת חיבור לבסיס הנתונים</div>';
+  });
 
   function selectRsvp(val) {
     formRsvp = val;
@@ -358,7 +400,7 @@
     if (pending) { addFormBringTag(pending); bringInput.value = ''; }
 
     const nameEl = document.getElementById('f-name');
-    const name = nameEl.value.trim();
+    const name   = nameEl.value.trim();
     if (!name) {
       nameEl.focus();
       nameEl.style.borderColor = '#c62828';
@@ -366,18 +408,21 @@
       return;
     }
 
-    const adults = Math.max(0, parseInt(document.getElementById('f-adults').value) || 0);
-    const kids   = Math.max(0, parseInt(document.getElementById('f-kids').value) || 0);
-    const notes  = document.getElementById('f-notes').value.trim();
-    const newId  = Date.now();
-    const guests = loadGuests();
-    guests.push({
-      id: newId, name, adults, kids,
-      diet: document.getElementById('f-diet').value.trim(),
-      rsvp: formRsvp, bring: [...formBring], notes,
+    const guest = {
+      name,
+      adults:    Math.max(0, parseInt(document.getElementById('f-adults').value) || 0),
+      kids:      Math.max(0, parseInt(document.getElementById('f-kids').value)   || 0),
+      diet:      document.getElementById('f-diet').value.trim(),
+      rsvp:      formRsvp,
+      bring:     formBring.length ? formBring : [],
+      notes:     document.getElementById('f-notes').value.trim(),
+      createdAt: Date.now(),
+    };
+
+    const newRef = guestsRef.push();
+    newRef.set(guest).then(() => {
+      localStorage.setItem('myGuestKey', newRef.key);
     });
-    saveGuests(guests);
-    localStorage.setItem('myGuestId', newId);
 
     nameEl.value = '';
     document.getElementById('f-adults').value = '1';
@@ -388,61 +433,64 @@
     renderFormBring();
     selectRsvp('yes');
     nameEl.focus();
-    render();
   }
 
-  function cycleRsvp(id) {
-    const order = ['yes','maybe','no'];
-    const guests = loadGuests();
-    const g = guests.find(x => x.id === id);
-    if (g) g.rsvp = order[(order.indexOf(g.rsvp) + 1) % order.length];
-    saveGuests(guests); render();
+  function cycleRsvp(key) {
+    const order = ['yes', 'maybe', 'no'];
+    guestsRef.child(key).child('rsvp').once('value').then(snap => {
+      const current = snap.val() || 'yes';
+      const next = order[(order.indexOf(current) + 1) % order.length];
+      guestsRef.child(key).update({ rsvp: next });
+    });
   }
 
-  function addBringItem(id, val) {
+  function addBringItem(key, val) {
     val = val.trim();
     if (!val) return;
-    const guests = loadGuests();
-    const g = guests.find(x => x.id === id);
-    if (g && !g.bring.includes(val)) g.bring.push(val);
-    saveGuests(guests); render();
+    guestsRef.child(key).child('bring').once('value').then(snap => {
+      const bring = snap.val() || [];
+      if (!bring.includes(val)) {
+        guestsRef.child(key).update({ bring: [...bring, val] });
+      }
+    });
   }
 
-  function removeBringItem(id, idx) {
-    const guests = loadGuests();
-    const g = guests.find(x => x.id === id);
-    if (g) g.bring.splice(idx, 1);
-    saveGuests(guests); render();
+  function removeBringItem(key, idx) {
+    guestsRef.child(key).child('bring').once('value').then(snap => {
+      const bring = snap.val() || [];
+      bring.splice(idx, 1);
+      guestsRef.child(key).update({ bring });
+    });
   }
 
-  function saveNotes(id, val) {
-    const guests = loadGuests();
-    const g = guests.find(x => x.id === id);
-    if (g) g.notes = val.trim();
-    saveGuests(guests);
+  function saveNotes(key, val) {
+    guestsRef.child(key).update({ notes: val.trim() });
   }
 
-  function removePerson(id, name) {
+  function removePerson(key, name) {
     if (!confirm(`למחוק את ${name} מהרשימה?`)) return;
-    saveGuests(loadGuests().filter(x => x.id !== id));
-    localStorage.removeItem('myGuestId');
-    render();
+    guestsRef.child(key).remove().then(() => {
+      localStorage.removeItem('myGuestKey');
+    });
   }
 
-  function handleInlineAdd(e, id) {
-    if (e.key === 'Enter') { addBringItem(id, e.target.value); e.target.value = ''; }
+  function handleInlineAdd(e, key) {
+    if (e.key === 'Enter') {
+      addBringItem(key, e.target.value);
+      e.target.value = '';
+    }
   }
 
-  function toggleNotesEdit(id) {
-    const card = document.getElementById('gc-' + id);
+  function toggleNotesEdit(key) {
+    const card = document.getElementById('gc-' + key);
     const view = card.querySelector('.notes-text');
     const edit = card.querySelector('.notes-edit');
-    if (edit.style.display === 'none' || !edit.style.display) {
+    if (!edit.style.display || edit.style.display === 'none') {
       edit.style.display = 'block';
       if (view) view.style.display = 'none';
       edit.focus();
     } else {
-      saveNotes(id, edit.value);
+      saveNotes(key, edit.value);
       edit.style.display = 'none';
       if (view) { view.style.display = ''; view.textContent = edit.value.trim() || ''; }
     }
@@ -457,26 +505,30 @@
     document.getElementById('stat-kids').textContent   = guests.reduce((s,g) => s+(g.kids||0), 0);
   }
 
-  function render() {
-    const guests = loadGuests();
-    const myId = getMyId();
+  function render(guests) {
+    const myKey = getMyKey();
     updateStats(guests);
     const list = document.getElementById('guest-list');
+
     if (!guests.length) {
       list.innerHTML = '<div class="empty-msg">עדיין אין נרשמים — היה הראשון! 🎉</div>';
       return;
     }
+
     list.innerHTML = guests.map((g, i) => {
-      const isMe = g.id === myId;
-      const cardClass = (g.rsvp==='no' ? 'rsvp-no' : (g.rsvp==='maybe' ? 'rsvp-maybe' : '')) + (isMe ? ' mine' : '');
+      const key   = g._key;
+      const isMe  = key === myKey;
+      const cardClass = (g.rsvp==='no' ? 'rsvp-no' : g.rsvp==='maybe' ? 'rsvp-maybe' : '') + (isMe ? ' mine' : '');
       const rsvpBadge = g.rsvp==='yes' ? 'badge-rsvp-yes' : (g.rsvp==='maybe' ? 'badge-rsvp-maybe' : 'badge-rsvp-no');
       const a = g.adults||0, k = g.kids||0;
       const peopleStr = (a||k) ? `${a} מבוגר${a!==1?'ים':''}${k>0?` + ${k} ילד${k!==1?'ים':''}`:''}`  : '';
-      const bringTags = (g.bring||[]).map((item,idx) =>
-        `<span class="tag">${escHtml(item)} <span class="tag-x" onclick="removeBringItem(${g.id},${idx})">✕</span></span>`
+      const bringArr  = Array.isArray(g.bring) ? g.bring : [];
+      const bringTags = bringArr.map((item, idx) =>
+        `<span class="tag">${escHtml(item)} <span class="tag-x" onclick="removeBringItem('${key}',${idx})">✕</span></span>`
       ).join('');
+
       return `
-        <div class="guest-card ${cardClass}" id="gc-${g.id}">
+        <div class="guest-card ${cardClass}" id="gc-${key}">
           <div class="guest-top">
             <span class="guest-name">${i+1}. ${escHtml(g.name)}${isMe ? ' <span style="font-size:.75rem;color:#003399;font-weight:400;">(אני)</span>' : ''}</span>
             <div class="guest-meta">
@@ -492,22 +544,24 @@
                 ${bringTags || '<span style="color:#aab4cc;font-size:.85rem;">עדיין לא צוין</span>'}
               </div>
               <div class="inline-add">
-                <input type="text" placeholder="הוסף פריט…" onkeydown="handleInlineAdd(event,${g.id})" id="bring-in-${g.id}" />
+                <input type="text" placeholder="הוסף פריט…"
+                  onkeydown="handleInlineAdd(event,'${key}')"
+                  id="bring-in-${key}" />
                 <button class="btn btn-xs btn-add-item"
-                  onclick="addBringItem(${g.id},document.getElementById('bring-in-${g.id}').value);document.getElementById('bring-in-${g.id}').value='';document.getElementById('bring-in-${g.id}').focus()">
+                  onclick="addBringItem('${key}',document.getElementById('bring-in-${key}').value);document.getElementById('bring-in-${key}').value='';document.getElementById('bring-in-${key}').focus()">
                   + הוסף
                 </button>
               </div>
             </div>
             <div class="notes-section">
-              <label>📝 הערות: <small style="font-weight:400;cursor:pointer;color:#003399" onclick="toggleNotesEdit(${g.id})">(ערוך)</small></label>
+              <label>📝 הערות: <small style="font-weight:400;cursor:pointer;color:#003399" onclick="toggleNotesEdit('${key}')">(ערוך)</small></label>
               <div class="notes-text">${g.notes ? escHtml(g.notes) : '<span style="color:#ccc">אין הערות</span>'}</div>
-              <textarea class="notes-edit" onblur="saveNotes(${g.id},this.value);this.style.display='none';this.previousElementSibling.style.display=''">${escHtml(g.notes||'')}</textarea>
+              <textarea class="notes-edit" onblur="saveNotes('${key}',this.value);this.style.display='none';this.previousElementSibling.style.display=''">${escHtml(g.notes||'')}</textarea>
             </div>
           </div>
           <div class="guest-actions">
-            <button class="btn btn-sm btn-add-item" onclick="cycleRsvp(${g.id})">🔄 שנה סטטוס הגעה</button>
-            ${isMe ? `<button class="btn btn-sm btn-remove" onclick="removePerson(${g.id},'${escJs(g.name)}')">הסר אותי</button>` : ''}
+            <button class="btn btn-sm btn-add-item" onclick="cycleRsvp('${key}')">🔄 שנה סטטוס הגעה</button>
+            ${isMe ? `<button class="btn btn-sm btn-remove" onclick="removePerson('${key}','${escJs(g.name)}')">הסר אותי</button>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -516,13 +570,11 @@
   function escHtml(str) {
     return String(str??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-  function escJs(str) { return String(str??'').replace(/'/g,"\\'"); }
+  function escJs(str) { return String(str??'').replace(/'/g,"\\'").replace(/\n/g,' '); }
 
   document.getElementById('f-name').addEventListener('keydown', e => {
     if (e.key==='Enter') document.getElementById('f-adults').focus();
   });
-
-  render();
 </script>
 </body>
 </html>
