@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מנגל יום העצמאות 🇮🇱🔥</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+      color: #1a1a2e;
+    }
+
+    header { text-align: center; margin-bottom: 28px; }
+    header .flag { font-size: 3rem; display: block; margin-bottom: 6px; }
+    header h1 { font-size: 2.2rem; color: #003399; font-weight: 800; }
+    header p.subtitle { color: #5566aa; font-size: 1rem; margin-top: 6px; }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,51,153,.1);
+      padding: 22px 24px;
+      margin-bottom: 22px;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      color: #003399;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #dde6ff;
+    }
+
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 90px;
+      border-radius: 12px;
+      padding: 13px 14px;
+      text-align: center;
+      color: #fff;
+    }
+    .stat-box .num { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+    .stat-box .lbl { font-size: 0.72rem; opacity: .85; margin-top: 3px; }
+    .s-blue   { background: linear-gradient(135deg,#003399,#0055cc); }
+    .s-green  { background: linear-gradient(135deg,#2e7d32,#43a047); }
+    .s-orange { background: linear-gradient(135deg,#e65100,#ff8f00); }
+    .s-red    { background: linear-gradient(135deg,#b71c1c,#e53935); }
+    .s-teal   { background: linear-gradient(135deg,#00695c,#00897b); }
+    .s-purple { background: linear-gradient(135deg,#4527a0,#7b1fa2); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    label.field-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334;
+      margin-bottom: 5px;
+    }
+
+    input[type=text], input[type=number], select, textarea {
+      width: 100%;
+      padding: 9px 13px;
+      border: 2px solid #c5d0f0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #1a1a2e;
+      background: #fff;
+      transition: border-color .2s;
+      direction: rtl;
+    }
+    input[type=number] { -moz-appearance: textfield; }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #003399; }
+    input::placeholder, textarea::placeholder { color: #aab4cc; }
+    textarea { resize: vertical; min-height: 60px; }
+
+    .rsvp-options { display: flex; gap: 8px; flex-wrap: wrap; }
+    .rsvp-btn {
+      flex: 1; min-width: 80px;
+      padding: 8px 10px;
+      border: 2px solid #c5d0f0;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .15s;
+      font-weight: 700;
+      text-align: center;
+      background: #f7f9ff;
+      color: #334;
+    }
+    .rsvp-btn:hover { border-color: #888; }
+    .rsvp-btn.sel-yes  { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+    .rsvp-btn.sel-maybe{ background: #fff8e1; border-color: #f9a825; color: #e65100; }
+    .rsvp-btn.sel-no   { background: #fce4e4; border-color: #c62828; color: #c62828; }
+
+    .tag-input-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      border: 2px solid #c5d0f0;
+      border-radius: 10px;
+      padding: 6px 10px;
+      min-height: 44px;
+      cursor: text;
+      background: #fff;
+      transition: border-color .2s;
+    }
+    .tag-input-wrap:focus-within { border-color: #003399; }
+    .tag-input-wrap input {
+      border: none;
+      padding: 2px 4px;
+      flex: 1;
+      min-width: 120px;
+      font-size: 0.92rem;
+    }
+    .tag-input-wrap input:focus { outline: none; border: none; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #dde6ff;
+      color: #003399;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .tag .tag-x { cursor: pointer; font-size: 0.9rem; opacity: .6; line-height: 1; }
+    .tag .tag-x:hover { opacity: 1; }
+
+    .btn {
+      padding: 10px 22px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: #003399; color: #fff; }
+    .btn-primary:hover { background: #0044cc; }
+    .btn-sm { padding: 5px 11px; font-size: 0.8rem; border-radius: 8px; }
+    .btn-xs { padding: 3px 8px; font-size: 0.76rem; border-radius: 6px; }
+    .btn-arrived { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
+    .btn-arrived:hover { background: #c8e6c9; }
+    .btn-arrived.active { background: #2e7d32; color: #fff; border-color: #2e7d32; }
+    .btn-remove { background: #fce4e4; color: #c62828; border: 2px solid #ef9a9a; }
+    .btn-remove:hover { background: #ffcdd2; }
+    .btn-add-item { background: #eef2ff; color: #003399; border: 2px solid #c5d0f0; }
+    .btn-add-item:hover { background: #dde6ff; }
+
+    .guest-list { display: flex; flex-direction: column; gap: 14px; }
+    .guest-card {
+      border: 2px solid #eef1fb;
+      border-radius: 14px;
+      padding: 16px 18px;
+      transition: border-color .15s, background .15s;
+      background: #fafbff;
+    }
+    .guest-card.arrived-card { background: #f1faf2; border-color: #a5d6a7; }
+    .guest-card.rsvp-no { background: #fff5f5; border-color: #ffcdd2; opacity: .75; }
+    .guest-card.rsvp-maybe { background: #fffde7; border-color: #ffe082; }
+
+    .guest-top { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+    .guest-name { font-size: 1.05rem; font-weight: 800; color: #1a1a2e; flex: 1; min-width: 120px; }
+    .guest-meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+
+    .badge {
+      display: inline-block;
+      border-radius: 6px;
+      padding: 2px 9px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-rsvp-yes   { background: #e8f5e9; color: #2e7d32; }
+    .badge-rsvp-maybe { background: #fff8e1; color: #e65100; }
+    .badge-rsvp-no    { background: #fce4e4; color: #c62828; }
+    .badge-arrived    { background: #2e7d32; color: #fff; }
+    .badge-people     { background: #eef2ff; color: #003399; }
+    .badge-diet       { background: #f3e5f5; color: #6a1b9a; }
+
+    .guest-body { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .bring-section label, .notes-section label {
+      font-size: 0.78rem; font-weight: 700; color: #5566aa; display: block; margin-bottom: 5px;
+    }
+    .bring-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .inline-add { display: flex; gap: 6px; margin-top: 6px; }
+    .inline-add input {
+      padding: 4px 10px; border: 1.5px solid #c5d0f0;
+      border-radius: 8px; font-size: 0.82rem; width: 160px;
+    }
+    .notes-text {
+      font-size: 0.88rem; color: #555; background: #f7f9ff;
+      border-radius: 8px; padding: 6px 10px; white-space: pre-wrap;
+    }
+    .notes-edit {
+      width: 100%; border: 1.5px solid #c5d0f0; border-radius: 8px;
+      font-family: inherit; font-size: 0.88rem; padding: 6px 10px;
+      resize: vertical; min-height: 50px; display: none;
+    }
+    .guest-actions {
+      display: flex; gap: 7px; flex-wrap: wrap;
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid #eef1fb; align-items: center;
+    }
+    .empty-msg { text-align: center; color: #aab4cc; padding: 32px 0; font-size: 1rem; }
+    footer { text-align: center; color: #8899bb; font-size: 0.8rem; margin-top: 8px; }
+
+    @media (max-width: 540px) {
+      header h1 { font-size: 1.6rem; }
+      .card { padding: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="flag">🇮🇱🔥</span>
+  <h1>מנגל יום העצמאות</h1>
+  <p class="subtitle">רשימת משתתפים • מה כולם מביאים • העדפות אוכל • מי הגיע</p>
+</header>
+
+<div class="card">
+  <div class="stats">
+    <div class="stat-box s-blue">
+      <div class="num" id="stat-groups">0</div>
+      <div class="lbl">קבוצות / רישומים</div>
+    </div>
+    <div class="stat-box s-teal">
+      <div class="num" id="stat-people">0</div>
+      <div class="lbl">סה"כ אנשים</div>
+    </div>
+    <div class="stat-box s-green">
+      <div class="num" id="stat-yes">0</div>
+      <div class="lbl">מגיעים ✅</div>
+    </div>
+    <div class="stat-box s-orange">
+      <div class="num" id="stat-maybe">0</div>
+      <div class="lbl">אולי מגיעים 🤔</div>
+    </div>
+    <div class="stat-box s-red">
+      <div class="num" id="stat-no">0</div>
+      <div class="lbl">לא מגיעים ❌</div>
+    </div>
+    <div class="stat-box s-purple">
+      <div class="num" id="stat-kids">0</div>
+      <div class="lbl">סך הכל ילדים 👧🧒</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>➕ הוסף את עצמך לאירוע</h2>
+  <div class="form-grid">
+    <div>
+      <label class="field-label">שם מלא *</label>
+      <input type="text" id="f-name" placeholder="שם פרטי ומשפחה" maxlength="60" />
+    </div>
+    <div>
+      <label class="field-label">סטטוס הגעה *</label>
+      <div class="rsvp-options" id="f-rsvp-group">
+        <button class="rsvp-btn sel-yes" data-val="yes" onclick="selectRsvp('yes')">✅ מגיע/ה</button>
+        <button class="rsvp-btn" data-val="maybe" onclick="selectRsvp('maybe')">🤔 אולי</button>
+        <button class="rsvp-btn" data-val="no" onclick="selectRsvp('no')">❌ לא מגיע/ה</button>
+      </div>
+    </div>
+    <div>
+      <label class="field-label">כמה מבוגרים? (כולל עצמך)</label>
+      <input type="number" id="f-adults" value="1" min="0" max="50" />
+    </div>
+    <div>
+      <label class="field-label">כמה ילדים?</label>
+      <input type="number" id="f-kids" value="0" min="0" max="50" />
+    </div>
+    <div class="full">
+      <label class="field-label">העדפות אוכל</label>
+      <input type="text" id="f-diet" placeholder="לדוגמה: צמחוני, אלרגי לבוטנים, דגים בלבד…" maxlength="120" />
+    </div>
+    <div class="full">
+      <label class="field-label">מה אתה מביא? <small style="font-weight:400;color:#888">(כתוב פריט ולחץ Enter או פסיק)</small></label>
+      <div class="tag-input-wrap" id="f-bring-wrap" onclick="document.getElementById('f-bring-input').focus()">
+        <input type="text" id="f-bring-input" placeholder="לדוגמה: בירה, סלט, נקניקיות…" autocomplete="off" onkeydown="handleBringKey(event)" />
+      </div>
+    </div>
+    <div class="full">
+      <label class="field-label">הערות נוספות</label>
+      <textarea id="f-notes" placeholder="אלרגיות, בקשות מיוחדות, הערה כלשהי…"></textarea>
+    </div>
+  </div>
+  <div style="margin-top:16px;">
+    <button class="btn btn-primary" onclick="addPerson()">הוסף לרשימה</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📋 רשימת משתתפים</h2>
+  <div class="guest-list" id="guest-list">
+    <div class="empty-msg">עדיין אין נרשמים — היה הראשון! 🎉</div>
+  </div>
+</div>
+
+<footer>יום עצמאות שמח! 🎆</footer>
+
+<script>
+  const STORAGE_KEY = 'bbq_guests_v2';
+  let formRsvp = 'yes';
+  let formBring = [];
+
+  const RSVP_LABELS = {
+    yes:   '✅ מגיע/ה',
+    maybe: '🤔 אולי מגיע/ה',
+    no:    '❌ לא מגיע/ה',
+  };
+
+  function loadGuests() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+  function saveGuests(g) { localStorage.setItem(STORAGE_KEY, JSON.stringify(g)); }
+
+  function selectRsvp(val) {
+    formRsvp = val;
+    document.querySelectorAll('#f-rsvp-group .rsvp-btn').forEach(b => {
+      b.className = 'rsvp-btn' + (b.dataset.val === val ? ' sel-' + val : '');
+    });
+  }
+
+  function handleBringKey(e) {
+    const input = e.target;
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = input.value.replace(/,/g, '').trim();
+      if (val) addFormBringTag(val);
+      input.value = '';
+    } else if (e.key === 'Backspace' && input.value === '' && formBring.length) {
+      formBring.pop();
+      renderFormBring();
+    }
+  }
+
+  function addFormBringTag(val) {
+    if (val && !formBring.includes(val)) { formBring.push(val); renderFormBring(); }
+  }
+  function removeFormBringTag(idx) { formBring.splice(idx, 1); renderFormBring(); }
+
+  function renderFormBring() {
+    const wrap = document.getElementById('f-bring-wrap');
+    const input = document.getElementById('f-bring-input');
+    wrap.querySelectorAll('.tag').forEach(t => t.remove());
+    formBring.forEach((item, i) => {
+      const t = document.createElement('span');
+      t.className = 'tag';
+      t.innerHTML = `${escHtml(item)} <span class="tag-x" onclick="removeFormBringTag(${i})">✕</span>`;
+      wrap.insertBefore(t, input);
+    });
+  }
+
+  function addPerson() {
+    const bringInput = document.getElementById('f-bring-input');
+    const pending = bringInput.value.replace(/,/g, '').trim();
+    if (pending) { addFormBringTag(pending); bringInput.value = ''; }
+
+    const nameEl = document.getElementById('f-name');
+    const name = nameEl.value.trim();
+    if (!name) {
+      nameEl.focus();
+      nameEl.style.borderColor = '#c62828';
+      setTimeout(() => nameEl.style.borderColor = '', 1500);
+      return;
+    }
+
+    const adults = Math.max(0, parseInt(document.getElementById('f-adults').value) || 0);
+    const kids   = Math.max(0, parseInt(document.getElementById('f-kids').value) || 0);
+    const notes  = document.getElementById('f-notes').value.trim();
+    const guests = loadGuests();
+    guests.push({
+      id: Date.now(), name, adults, kids,
+      diet: document.getElementById('f-diet').value.trim(),
+      rsvp: formRsvp, bring: [...formBring], notes, arrived: false,
+    });
+    saveGuests(guests);
+    nameEl.value = '';
+    document.getElementById('f-adults').value = '1';
+    document.getElementById('f-kids').value = '0';
+    document.getElementById('f-notes').value = '';
+    document.getElementById('f-diet').value = '';
+    formBring = [];
+    renderFormBring();
+    selectRsvp('yes');
+    nameEl.focus();
+    render();
+  }
+
+  function toggleArrived(id) {
+    const guests = loadGuests();
+    const g = guests.find(x => x.id === id);
+    if (g) g.arrived = !g.arrived;
+    saveGuests(guests); render();
+  }
+
+  function cycleRsvp(id) {
+    const order = ['yes','maybe','no'];
+    const guests = loadGuests();
+    const g = guests.find(x => x.id === id);
+    if (g) g.rsvp = order[(order.indexOf(g.rsvp) + 1) % order.length];
+    saveGuests(guests); render();
+  }
+
+  function addBringItem(id, val) {
+    val = val.trim();
+    if (!val) return;
+    const guests = loadGuests();
+    const g = guests.find(x => x.id === id);
+    if (g && !g.bring.includes(val)) g.bring.push(val);
+    saveGuests(guests); render();
+  }
+
+  function removeBringItem(id, idx) {
+    const guests = loadGuests();
+    const g = guests.find(x => x.id === id);
+    if (g) g.bring.splice(idx, 1);
+    saveGuests(guests); render();
+  }
+
+  function saveNotes(id, val) {
+    const guests = loadGuests();
+    const g = guests.find(x => x.id === id);
+    if (g) g.notes = val.trim();
+    saveGuests(guests);
+  }
+
+  function removePerson(id, name) {
+    if (!confirm(`למחוק את ${name} מהרשימה?`)) return;
+    saveGuests(loadGuests().filter(x => x.id !== id));
+    render();
+  }
+
+  function handleInlineAdd(e, id) {
+    if (e.key === 'Enter') { addBringItem(id, e.target.value); e.target.value = ''; }
+  }
+
+  function toggleNotesEdit(id) {
+    const card = document.getElementById('gc-' + id);
+    const view = card.querySelector('.notes-text');
+    const edit = card.querySelector('.notes-edit');
+    if (edit.style.display === 'none' || !edit.style.display) {
+      edit.style.display = 'block';
+      if (view) view.style.display = 'none';
+      edit.focus();
+    } else {
+      saveNotes(id, edit.value);
+      edit.style.display = 'none';
+      if (view) { view.style.display = ''; view.textContent = edit.value.trim() || ''; }
+    }
+  }
+
+  function updateStats(guests) {
+    document.getElementById('stat-groups').textContent = guests.length;
+    document.getElementById('stat-people').textContent = guests.reduce((s,g) => s+(g.adults||0)+(g.kids||0), 0);
+    document.getElementById('stat-yes').textContent    = guests.filter(g => g.rsvp==='yes').length;
+    document.getElementById('stat-maybe').textContent  = guests.filter(g => g.rsvp==='maybe').length;
+    document.getElementById('stat-no').textContent     = guests.filter(g => g.rsvp==='no').length;
+    document.getElementById('stat-kids').textContent   = guests.reduce((s,g) => s+(g.kids||0), 0);
+  }
+
+  function render() {
+    const guests = loadGuests();
+    updateStats(guests);
+    const list = document.getElementById('guest-list');
+    if (!guests.length) {
+      list.innerHTML = '<div class="empty-msg">עדיין אין נרשמים — היה הראשון! 🎉</div>';
+      return;
+    }
+    list.innerHTML = guests.map((g, i) => {
+      const cardClass = g.arrived ? 'arrived-card' : (g.rsvp==='no' ? 'rsvp-no' : (g.rsvp==='maybe' ? 'rsvp-maybe' : ''));
+      const rsvpBadge = g.rsvp==='yes' ? 'badge-rsvp-yes' : (g.rsvp==='maybe' ? 'badge-rsvp-maybe' : 'badge-rsvp-no');
+      const peopleStr = (() => {
+        const a = g.adults||0, k = g.kids||0;
+        if (!a && !k) return '';
+        return `${a} מבוגר${a!==1?'ים':''}${k>0?` + ${k} ילד${k!==1?'ים':''}`:''}`;
+      })();
+      const bringTags = (g.bring||[]).map((item,idx) =>
+        `<span class="tag">${escHtml(item)} <span class="tag-x" onclick="removeBringItem(${g.id},${idx})">✕</span></span>`
+      ).join('');
+      return `
+        <div class="guest-card ${cardClass}" id="gc-${g.id}">
+          <div class="guest-top">
+            <span class="guest-name">${i+1}. ${escHtml(g.name)}</span>
+            <div class="guest-meta">
+              ${peopleStr ? `<span class="badge badge-people">👥 ${escHtml(peopleStr)}</span>` : ''}
+              ${g.diet ? `<span class="badge badge-diet">🍽️ ${escHtml(g.diet)}</span>` : ''}
+              <span class="badge ${rsvpBadge}">${escHtml(RSVP_LABELS[g.rsvp]||'✅ מגיע/ה')}</span>
+              ${g.arrived ? '<span class="badge badge-arrived">🏠 הגיע/ה</span>' : ''}
+            </div>
+          </div>
+          <div class="guest-body">
+            <div class="bring-section">
+              <label>🛒 מה מביאים:</label>
+              <div class="bring-tags">
+                ${bringTags || '<span style="color:#aab4cc;font-size:.85rem;">עדיין לא צוין</span>'}
+              </div>
+              <div class="inline-add">
+                <input type="text" placeholder="הוסף פריט…" onkeydown="handleInlineAdd(event,${g.id})" id="bring-in-${g.id}" />
+                <button class="btn btn-xs btn-add-item"
+                  onclick="addBringItem(${g.id},document.getElementById('bring-in-${g.id}').value);document.getElementById('bring-in-${g.id}').value='';document.getElementById('bring-in-${g.id}').focus()">
+                  + הוסף
+                </button>
+              </div>
+            </div>
+            <div class="notes-section">
+              <label>📝 הערות: <small style="font-weight:400;cursor:pointer;color:#003399" onclick="toggleNotesEdit(${g.id})">(ערוך)</small></label>
+              <div class="notes-text">${g.notes ? escHtml(g.notes) : '<span style="color:#ccc">אין הערות</span>'}</div>
+              <textarea class="notes-edit" onblur="saveNotes(${g.id},this.value);this.style.display='none';this.previousElementSibling.style.display=''">${escHtml(g.notes||'')}</textarea>
+            </div>
+          </div>
+          <div class="guest-actions">
+            <button class="btn btn-sm btn-arrived ${g.arrived?'active':''}" onclick="toggleArrived(${g.id})">
+              ${g.arrived ? '✔ הגיע/ה' : 'סמן הגיע/ה'}
+            </button>
+            <button class="btn btn-sm btn-add-item" onclick="cycleRsvp(${g.id})">שנה סטטוס</button>
+            <button class="btn btn-sm btn-remove" onclick="removePerson(${g.id},'${escJs(g.name)}')">הסר</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function escHtml(str) {
+    return String(str??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escJs(str) { return String(str??'').replace(/'/g,"\\'"); }
+
+  document.getElementById('f-name').addEventListener('keydown', e => {
+    if (e.key==='Enter') document.getElementById('f-adults').focus();
+  });
+
+  render();
+</script>
+</body>
+</html>
