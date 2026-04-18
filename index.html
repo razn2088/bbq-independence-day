@@ -174,6 +174,12 @@
       margin-top: 12px; padding-top: 10px;
       border-top: 1px solid #eef1fb; align-items: center;
     }
+    .edit-form {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 2px dashed #dde6ff;
+    }
 
     /* Ticker */
     .ticker-wrap {
@@ -560,11 +566,157 @@
             </div>
           </div>
           <div class="guest-actions">
-            <button class="btn btn-sm btn-add-item" onclick="cycleRsvp('${key}')">🔄 שנה סטטוס הגעה</button>
-            ${isMe ? `<button class="btn btn-sm btn-remove" onclick="removePerson('${key}','${escJs(g.name)}')">הסר אותי</button>` : ''}
+            <button class="btn btn-sm btn-add-item" onclick="cycleRsvp('${key}')">🔄 שנה סטטוס</button>
+            ${isMe ? `
+            <button class="btn btn-sm btn-add-item" onclick="openEdit('${key}')">✏️ ערוך פרטים</button>
+            <button class="btn btn-sm btn-remove" onclick="removePerson('${key}','${escJs(g.name)}')">🗑️ מחק</button>` : ''}
           </div>
+          ${isMe ? `
+          <div class="edit-form" id="edit-form-${key}">
+            <div class="form-grid">
+              <div>
+                <label class="field-label">שם מלא</label>
+                <input type="text" class="edit-name" value="${escHtml(g.name)}" maxlength="60" />
+              </div>
+              <div>
+                <label class="field-label">סטטוס הגעה</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button class="rsvp-btn edit-rsvp-btn ${g.rsvp==='yes'?'sel-yes':''}" data-val="yes" onclick="selectEditRsvp('${key}','yes')">✅ מגיע/ה</button>
+                  <button class="rsvp-btn edit-rsvp-btn ${g.rsvp==='maybe'?'sel-maybe':''}" data-val="maybe" onclick="selectEditRsvp('${key}','maybe')">🤔 אולי</button>
+                  <button class="rsvp-btn edit-rsvp-btn ${g.rsvp==='no'?'sel-no':''}" data-val="no" onclick="selectEditRsvp('${key}','no')">❌ לא</button>
+                </div>
+                <input type="hidden" class="edit-rsvp-val" value="${escHtml(g.rsvp||'yes')}" />
+              </div>
+              <div>
+                <label class="field-label">מבוגרים</label>
+                <input type="number" class="edit-adults" value="${a}" min="0" max="50" />
+              </div>
+              <div>
+                <label class="field-label">ילדים</label>
+                <input type="number" class="edit-kids" value="${k}" min="0" max="50" />
+              </div>
+              <div class="full">
+                <label class="field-label">העדפות אוכל</label>
+                <input type="text" class="edit-diet" value="${escHtml(g.diet||'')}" maxlength="120" />
+              </div>
+              <div class="full">
+                <label class="field-label">מה מביאים</label>
+                <div class="tag-input-wrap" id="edit-bring-wrap-${key}" onclick="document.getElementById('edit-bring-input-${key}').focus()">
+                  <input type="text" id="edit-bring-input-${key}" placeholder="הוסף פריט ולחץ Enter…" autocomplete="off"
+                    onkeydown="handleEditBringKey(event,'${key}')" />
+                </div>
+              </div>
+              <div class="full">
+                <label class="field-label">הערות</label>
+                <textarea class="edit-notes">${escHtml(g.notes||'')}</textarea>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" onclick="saveEdit('${key}')">💾 שמור שינויים</button>
+              <button class="btn btn-sm" style="background:#eef2ff;color:#003399;border:2px solid #c5d0f0;" onclick="closeEdit('${key}')">ביטול</button>
+            </div>
+          </div>` : ''}
         </div>`;
     }).join('');
+  }
+
+  // ── Edit ──
+  const editBringState = {};
+
+  function openEdit(key) {
+    guestsRef.child(key).once('value').then(snap => {
+      const g = snap.val();
+      if (!g) return;
+      editBringState[key] = Array.isArray(g.bring) ? [...g.bring] : [];
+      const card = document.getElementById('gc-' + key);
+      card.querySelector('.edit-name').value     = g.name   || '';
+      card.querySelector('.edit-adults').value   = g.adults || 0;
+      card.querySelector('.edit-kids').value     = g.kids   || 0;
+      card.querySelector('.edit-diet').value     = g.diet   || '';
+      card.querySelector('.edit-notes').value    = g.notes  || '';
+      card.querySelector('.edit-rsvp-val').value = g.rsvp   || 'yes';
+      selectEditRsvp(key, g.rsvp || 'yes');
+      renderEditBring(key);
+      card.querySelector('.guest-body').style.display    = 'none';
+      card.querySelector('.guest-actions').style.display = 'none';
+      card.querySelector('.edit-form').style.display     = 'block';
+      card.querySelector('.edit-name').focus();
+    });
+  }
+
+  function closeEdit(key) {
+    const card = document.getElementById('gc-' + key);
+    if (!card) return;
+    card.querySelector('.guest-body').style.display    = '';
+    card.querySelector('.guest-actions').style.display = '';
+    card.querySelector('.edit-form').style.display     = 'none';
+    delete editBringState[key];
+  }
+
+  function selectEditRsvp(key, val) {
+    const card = document.getElementById('gc-' + key);
+    card.querySelectorAll('.edit-rsvp-btn').forEach(b => {
+      b.className = 'rsvp-btn edit-rsvp-btn' + (b.dataset.val === val ? ' sel-' + val : '');
+    });
+    card.querySelector('.edit-rsvp-val').value = val;
+  }
+
+  function handleEditBringKey(e, key) {
+    const input = e.target;
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = input.value.replace(/,/g, '').trim();
+      if (val) { addEditBringTag(key, val); input.value = ''; }
+    } else if (e.key === 'Backspace' && input.value === '' && editBringState[key]?.length) {
+      editBringState[key].pop();
+      renderEditBring(key);
+    }
+  }
+
+  function addEditBringTag(key, val) {
+    if (!editBringState[key]) editBringState[key] = [];
+    if (!editBringState[key].includes(val)) { editBringState[key].push(val); renderEditBring(key); }
+  }
+
+  function removeEditBringTag(key, idx) {
+    if (editBringState[key]) { editBringState[key].splice(idx, 1); renderEditBring(key); }
+  }
+
+  function renderEditBring(key) {
+    const wrap  = document.getElementById('edit-bring-wrap-' + key);
+    const input = document.getElementById('edit-bring-input-' + key);
+    if (!wrap) return;
+    wrap.querySelectorAll('.tag').forEach(t => t.remove());
+    (editBringState[key] || []).forEach((item, i) => {
+      const t = document.createElement('span');
+      t.className = 'tag';
+      t.innerHTML = `${escHtml(item)} <span class="tag-x" onclick="removeEditBringTag('${key}',${i})">✕</span>`;
+      wrap.insertBefore(t, input);
+    });
+  }
+
+  function saveEdit(key) {
+    const card   = document.getElementById('gc-' + key);
+    const nameEl = card.querySelector('.edit-name');
+    const name   = nameEl.value.trim();
+    if (!name) {
+      nameEl.focus(); nameEl.style.borderColor = '#c62828';
+      setTimeout(() => nameEl.style.borderColor = '', 1500);
+      return;
+    }
+    const bringInput = document.getElementById('edit-bring-input-' + key);
+    const pending = bringInput?.value.replace(/,/g,'').trim();
+    if (pending) { addEditBringTag(key, pending); bringInput.value = ''; }
+
+    guestsRef.child(key).update({
+      name,
+      adults: Math.max(0, parseInt(card.querySelector('.edit-adults').value) || 0),
+      kids:   Math.max(0, parseInt(card.querySelector('.edit-kids').value)   || 0),
+      diet:   card.querySelector('.edit-diet').value.trim(),
+      rsvp:   card.querySelector('.edit-rsvp-val').value || 'yes',
+      bring:  editBringState[key] || [],
+      notes:  card.querySelector('.edit-notes').value.trim(),
+    }).then(() => closeEdit(key));
   }
 
   function escHtml(str) {
