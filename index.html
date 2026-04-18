@@ -11,11 +11,13 @@
       font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
       background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
       min-height: 100vh;
-      padding: 24px 16px 48px;
+      padding: 0 0 48px;
       color: #1a1a2e;
     }
 
-    header { text-align: center; margin-bottom: 28px; }
+    .page-content { padding: 24px 16px 0; }
+
+    header { text-align: center; margin-bottom: 28px; padding-top: 24px; }
     header .flag { font-size: 3rem; display: block; margin-bottom: 6px; }
     header h1 { font-size: 2.2rem; color: #003399; font-weight: 800; }
     header p.subtitle { color: #5566aa; font-size: 1rem; margin-top: 6px; }
@@ -38,6 +40,81 @@
       border-bottom: 2px solid #dde6ff;
     }
 
+    /* Ticker */
+    .ticker-wrap {
+      overflow: hidden;
+      background: linear-gradient(90deg,#002080,#003399,#002080);
+      padding: 9px 0;
+    }
+    .ticker {
+      display: inline-block;
+      white-space: nowrap;
+      animation: ticker 28s linear infinite;
+      font-size: 1.3rem;
+      letter-spacing: 5px;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* Israel stripe */
+    .israel-stripe {
+      height: 7px;
+      background: #003399;
+    }
+
+    /* Trump mascot */
+    .trump-card {
+      background: linear-gradient(135deg,#fff8f5,#fff);
+      border: 2px solid #ff6b35;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 22px;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .trump-avatar {
+      font-size: 4.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+      animation: bounce 2s ease-in-out infinite;
+      filter: drop-shadow(0 4px 8px rgba(255,107,53,.3));
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-10px) rotate(3deg); }
+    }
+    .trump-bubble { flex: 1; min-width: 180px; }
+    .trump-bubble .quote {
+      background: #fff;
+      border: 2px solid #ff6b35;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #b33000;
+      position: relative;
+      line-height: 1.6;
+    }
+    .trump-bubble .quote::after {
+      content: '';
+      position: absolute;
+      right: -13px;
+      top: 16px;
+      border: 7px solid transparent;
+      border-left-color: #ff6b35;
+    }
+    .trump-bubble .sub {
+      font-size: 0.78rem;
+      color: #aaa;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* Stats */
     .stats { display: flex; gap: 10px; flex-wrap: wrap; }
     .stat-box {
       flex: 1; min-width: 90px;
@@ -55,32 +132,20 @@
     .s-teal   { background: linear-gradient(135deg,#00695c,#00897b); }
     .s-purple { background: linear-gradient(135deg,#4527a0,#7b1fa2); }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    /* Form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .form-grid .full { grid-column: 1 / -1; }
 
     label.field-label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #334;
-      margin-bottom: 5px;
+      display: block; font-size: 0.82rem; font-weight: 700; color: #334; margin-bottom: 5px;
     }
 
     input[type=text], input[type=number], select, textarea {
-      width: 100%;
-      padding: 9px 13px;
-      border: 2px solid #c5d0f0;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: #1a1a2e;
-      background: #fff;
-      transition: border-color .2s;
-      direction: rtl;
+      width: 100%; padding: 9px 13px;
+      border: 2px solid #c5d0f0; border-radius: 10px;
+      font-size: 0.95rem; font-family: inherit;
+      color: #1a1a2e; background: #fff;
+      transition: border-color .2s; direction: rtl;
     }
     input[type=number] { -moz-appearance: textfield; }
     input[type=number]::-webkit-outer-spin-button,
@@ -91,71 +156,41 @@
 
     .rsvp-options { display: flex; gap: 8px; flex-wrap: wrap; }
     .rsvp-btn {
-      flex: 1; min-width: 80px;
-      padding: 8px 10px;
-      border: 2px solid #c5d0f0;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all .15s;
-      font-weight: 700;
-      text-align: center;
-      background: #f7f9ff;
-      color: #334;
+      flex: 1; min-width: 80px; padding: 8px 10px;
+      border: 2px solid #c5d0f0; border-radius: 10px;
+      font-size: 0.88rem; font-family: inherit; cursor: pointer;
+      transition: all .15s; font-weight: 700; text-align: center;
+      background: #f7f9ff; color: #334;
     }
     .rsvp-btn:hover { border-color: #888; }
-    .rsvp-btn.sel-yes  { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
-    .rsvp-btn.sel-maybe{ background: #fff8e1; border-color: #f9a825; color: #e65100; }
-    .rsvp-btn.sel-no   { background: #fce4e4; border-color: #c62828; color: #c62828; }
+    .rsvp-btn.sel-yes   { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+    .rsvp-btn.sel-maybe { background: #fff8e1; border-color: #f9a825; color: #e65100; }
+    .rsvp-btn.sel-no    { background: #fce4e4; border-color: #c62828; color: #c62828; }
 
     .tag-input-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      border: 2px solid #c5d0f0;
-      border-radius: 10px;
-      padding: 6px 10px;
-      min-height: 44px;
-      cursor: text;
-      background: #fff;
-      transition: border-color .2s;
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+      border: 2px solid #c5d0f0; border-radius: 10px;
+      padding: 6px 10px; min-height: 44px; cursor: text;
+      background: #fff; transition: border-color .2s;
     }
     .tag-input-wrap:focus-within { border-color: #003399; }
-    .tag-input-wrap input {
-      border: none;
-      padding: 2px 4px;
-      flex: 1;
-      min-width: 120px;
-      font-size: 0.92rem;
-    }
+    .tag-input-wrap input { border: none; padding: 2px 4px; flex: 1; min-width: 120px; font-size: 0.92rem; }
     .tag-input-wrap input:focus { outline: none; border: none; }
 
     .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: #dde6ff;
-      color: #003399;
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #dde6ff; color: #003399;
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 0.82rem; font-weight: 600; white-space: nowrap;
     }
     .tag .tag-x { cursor: pointer; font-size: 0.9rem; opacity: .6; line-height: 1; }
     .tag .tag-x:hover { opacity: 1; }
 
+    /* Buttons */
     .btn {
-      padding: 10px 22px;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background .2s, transform .1s;
+      padding: 10px 22px; border: none; border-radius: 10px;
+      font-size: 0.95rem; font-family: inherit; font-weight: 700;
+      cursor: pointer; transition: background .2s, transform .1s;
     }
     .btn:active { transform: scale(.97); }
     .btn-primary { background: #003399; color: #fff; }
@@ -170,16 +205,15 @@
     .btn-add-item { background: #eef2ff; color: #003399; border: 2px solid #c5d0f0; }
     .btn-add-item:hover { background: #dde6ff; }
 
+    /* Guest cards */
     .guest-list { display: flex; flex-direction: column; gap: 14px; }
     .guest-card {
-      border: 2px solid #eef1fb;
-      border-radius: 14px;
-      padding: 16px 18px;
-      transition: border-color .15s, background .15s;
+      border: 2px solid #eef1fb; border-radius: 14px;
+      padding: 16px 18px; transition: border-color .15s, background .15s;
       background: #fafbff;
     }
     .guest-card.arrived-card { background: #f1faf2; border-color: #a5d6a7; }
-    .guest-card.rsvp-no { background: #fff5f5; border-color: #ffcdd2; opacity: .75; }
+    .guest-card.rsvp-no    { background: #fff5f5; border-color: #ffcdd2; opacity: .75; }
     .guest-card.rsvp-maybe { background: #fffde7; border-color: #ffe082; }
 
     .guest-top { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
@@ -187,12 +221,8 @@
     .guest-meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
 
     .badge {
-      display: inline-block;
-      border-radius: 6px;
-      padding: 2px 9px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      white-space: nowrap;
+      display: inline-block; border-radius: 6px;
+      padding: 2px 9px; font-size: 0.75rem; font-weight: 700; white-space: nowrap;
     }
     .badge-rsvp-yes   { background: #e8f5e9; color: #2e7d32; }
     .badge-rsvp-maybe { background: #fff8e1; color: #e65100; }
@@ -225,25 +255,53 @@
       margin-top: 12px; padding-top: 10px;
       border-top: 1px solid #eef1fb; align-items: center;
     }
+
     .empty-msg { text-align: center; color: #aab4cc; padding: 32px 0; font-size: 1rem; }
-    footer { text-align: center; color: #8899bb; font-size: 0.8rem; margin-top: 8px; }
+
+    footer {
+      text-align: center; color: #8899bb;
+      font-size: 0.8rem; padding: 20px 16px 8px;
+    }
 
     @media (max-width: 540px) {
       header h1 { font-size: 1.6rem; }
       .card { padding: 16px; }
       .form-grid { grid-template-columns: 1fr; }
       .form-grid .full { grid-column: 1; }
+      .trump-avatar { font-size: 3.5rem; }
     }
   </style>
 </head>
 <body>
 
+<div class="israel-stripe"></div>
+<div class="ticker-wrap">
+  <span class="ticker">🇮🇱 &nbsp;🔥&nbsp; 🍖 &nbsp;🇮🇱&nbsp; 🥩 &nbsp;🔥&nbsp; 🇮🇱 &nbsp;🍗&nbsp; 🥂 &nbsp;🇮🇱&nbsp; 🔥 &nbsp;🍖&nbsp; 🇮🇱 &nbsp;🥩&nbsp; 🔥 &nbsp;🇮🇱&nbsp; 🍗 &nbsp;🥂&nbsp; 🇮🇱 &nbsp;🔥&nbsp; 🍖 &nbsp;🇮🇱&nbsp; 🥩 &nbsp;🔥&nbsp; 🇮🇱 &nbsp;🍗&nbsp; 🥂 &nbsp;🇮🇱&nbsp; 🔥 &nbsp;🍖&nbsp; 🇮🇱 &nbsp;🥩&nbsp; 🔥 &nbsp;🇮🇱&nbsp; 🍗 &nbsp;🥂&nbsp; </span>
+</div>
+<div class="israel-stripe"></div>
+
+<div class="page-content">
+
 <header>
-  <span class="flag">🇮🇱🔥</span>
+  <span class="flag">🇮🇱 🔥 🇮🇱</span>
   <h1>מנגל יום העצמאות</h1>
   <p class="subtitle">רשימת משתתפים • מה כולם מביאים • העדפות אוכל • מי הגיע</p>
+  <div style="font-size:1.5rem;letter-spacing:5px;margin-top:10px;">🍖 🥩 🍗 🔥 🍺 🌽 🔥 🍗 🥩 🍖</div>
 </header>
 
+<!-- Trump mascot -->
+<div class="trump-card">
+  <div class="trump-avatar">👱‍♂️🇺🇸</div>
+  <div class="trump-bubble">
+    <div class="quote">
+      "הכי טוב מנגל שראיתי אי פעם — TREMENDOUS BBQ! 🔥<br/>
+      אנשים אומרים לי, הכי גדול, הכי יפה — MAKE BBQ GREAT AGAIN!"
+    </div>
+    <div class="sub">— דונאלד טראמפ, מאוד מאושר 😄</div>
+  </div>
+</div>
+
+<!-- Stats -->
 <div class="card">
   <div class="stats">
     <div class="stat-box s-blue">
@@ -273,6 +331,7 @@
   </div>
 </div>
 
+<!-- Add person form -->
 <div class="card">
   <h2>➕ הוסף את עצמך לאירוע</h2>
   <div class="form-grid">
@@ -283,9 +342,9 @@
     <div>
       <label class="field-label">סטטוס הגעה *</label>
       <div class="rsvp-options" id="f-rsvp-group">
-        <button class="rsvp-btn sel-yes" data-val="yes" onclick="selectRsvp('yes')">✅ מגיע/ה</button>
-        <button class="rsvp-btn" data-val="maybe" onclick="selectRsvp('maybe')">🤔 אולי</button>
-        <button class="rsvp-btn" data-val="no" onclick="selectRsvp('no')">❌ לא מגיע/ה</button>
+        <button class="rsvp-btn sel-yes" data-val="yes"   onclick="selectRsvp('yes')">✅ מגיע/ה</button>
+        <button class="rsvp-btn"         data-val="maybe" onclick="selectRsvp('maybe')">🤔 אולי</button>
+        <button class="rsvp-btn"         data-val="no"    onclick="selectRsvp('no')">❌ לא מגיע/ה</button>
       </div>
     </div>
     <div>
@@ -316,6 +375,7 @@
   </div>
 </div>
 
+<!-- Guest list -->
 <div class="card">
   <h2>📋 רשימת משתתפים</h2>
   <div class="guest-list" id="guest-list">
@@ -323,14 +383,17 @@
   </div>
 </div>
 
+</div><!-- /page-content -->
+
 <footer>
+  <div style="font-size:1.4rem;letter-spacing:6px;margin-bottom:8px;">🇮🇱 🔥 🍖 🔥 🇮🇱</div>
   יום עצמאות שמח! 🎆<br/>
   <span style="font-size:0.75rem;opacity:0.7;">כל הזכויות שמורות לרז נעים הגבר רצח</span>
 </footer>
 
 <script>
   const STORAGE_KEY = 'bbq_guests_v2';
-  let formRsvp = 'yes';
+  let formRsvp  = 'yes';
   let formBring = [];
 
   const RSVP_LABELS = {
@@ -397,7 +460,7 @@
     }
 
     const adults = Math.max(0, parseInt(document.getElementById('f-adults').value) || 0);
-    const kids   = Math.max(0, parseInt(document.getElementById('f-kids').value) || 0);
+    const kids   = Math.max(0, parseInt(document.getElementById('f-kids').value)   || 0);
     const notes  = document.getElementById('f-notes').value.trim();
     const guests = loadGuests();
     guests.push({
@@ -408,9 +471,9 @@
     saveGuests(guests);
     nameEl.value = '';
     document.getElementById('f-adults').value = '1';
-    document.getElementById('f-kids').value = '0';
-    document.getElementById('f-notes').value = '';
-    document.getElementById('f-diet').value = '';
+    document.getElementById('f-kids').value   = '0';
+    document.getElementById('f-notes').value  = '';
+    document.getElementById('f-diet').value   = '';
     formBring = [];
     renderFormBring();
     selectRsvp('yes');
@@ -501,11 +564,8 @@
     list.innerHTML = guests.map((g, i) => {
       const cardClass = g.arrived ? 'arrived-card' : (g.rsvp==='no' ? 'rsvp-no' : (g.rsvp==='maybe' ? 'rsvp-maybe' : ''));
       const rsvpBadge = g.rsvp==='yes' ? 'badge-rsvp-yes' : (g.rsvp==='maybe' ? 'badge-rsvp-maybe' : 'badge-rsvp-no');
-      const peopleStr = (() => {
-        const a = g.adults||0, k = g.kids||0;
-        if (!a && !k) return '';
-        return `${a} מבוגר${a!==1?'ים':''}${k>0?` + ${k} ילד${k!==1?'ים':''}`:''}`;
-      })();
+      const a = g.adults||0, k = g.kids||0;
+      const peopleStr = (a||k) ? `${a} מבוגר${a!==1?'ים':''}${k>0?` + ${k} ילד${k!==1?'ים':''}`:''}`  : '';
       const bringTags = (g.bring||[]).map((item,idx) =>
         `<span class="tag">${escHtml(item)} <span class="tag-x" onclick="removeBringItem(${g.id},${idx})">✕</span></span>`
       ).join('');
