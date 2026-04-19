@@ -474,7 +474,9 @@
   function removePerson(key, name) {
     if (!confirm(`למחוק את ${name} מהרשימה?`)) return;
     guestsRef.child(key).remove().then(() => {
-      localStorage.removeItem('myGuestKey');
+      if (localStorage.getItem('myGuestKey') === key) {
+        localStorage.removeItem('myGuestKey');
+      }
     });
   }
 
@@ -565,9 +567,8 @@
           </div>
           <div class="guest-actions">
             <button class="btn btn-sm btn-add-item" onclick="cycleRsvp('${key}')">🔄 שנה סטטוס</button>
-            ${isMe ? `
-            <button class="btn btn-sm btn-add-item" onclick="openEdit('${key}')">✏️ ערוך פרטים</button>
-            <button class="btn btn-sm btn-remove" onclick="removePerson('${key}','${escJs(g.name)}')">🗑️ מחק</button>` : ''}
+            ${isMe ? `<button class="btn btn-sm btn-add-item" onclick="openEdit('${key}')">✏️ ערוך פרטים</button>` : ''}
+            <button class="btn btn-sm btn-remove" onclick="removePerson('${key}','${escJs(g.name)}')">🗑️ מחק</button>
           </div>
           ${isMe ? `
           <div class="edit-form" id="edit-form-${key}">
